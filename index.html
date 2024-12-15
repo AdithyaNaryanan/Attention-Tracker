@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adithya's Attention Tracker</title>
+    <title>Attention Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -125,7 +125,7 @@
     </style>
 </head>
 <body>
-    <h1>Welcome, Adithya!</h1>
+    <h1>Hello friend!</h1>
     <div class="container">
         <h2>Streak</h2>
         <div class="streak-bar">
@@ -135,22 +135,11 @@
 
     <div class="container">
         <div class="score-box">
-            <h3>Metrics Score - Day 1</h3>
-            <input type="number" id="metricsScoreDay1" value="0">
-        </div>
-        <div class="score-box">
-            <h3>Metrics Score - Day 7</h3>
-            <input type="number" id="metricsScoreDay7" value="0" disabled>
+            <h3>Metrics Score</h3>
+            <input type="number" id="metricsScore" value="0">
         </div>
     </div>
     
-    <div class="container">
-        <div class="score-box">
-            <h3>Effort Score</h3>
-            <p id="effortScore">0</p>
-        </div>
-    </div>
-
     <div class="container">
         <h2>Tasks for the Day</h2>
         <div class="task-list">
@@ -167,17 +156,6 @@
         <textarea class="journal-box" id="journalBox" placeholder="Write your thoughts here..."></textarea>
     </div>
 
-    <div class="container">
-        <h2>To-Do List</h2>
-        <textarea class="todo-box" id="todoBox" placeholder="Write your tasks for the day..."></textarea>
-    </div>
-
-    <div class="container">
-        <h2>Guided Meditation Links</h2>
-        <a href="https://www.youtube.com/watch?v=aGcA3nYFIH8&t=12s&ab_channel=MindfulBreaks" target="_blank">Morning Meditation</a>
-        <a href="https://www.youtube.com/watch?v=HlPZCqyIwV8&ab_channel=GreatMeditation" target="_blank">Nighttime Meditation</a>
-    </div>
-
     <div class="nav-buttons">
         <button id="prevButton" disabled>&lt; Previous</button>
         <span id="dayDisplay">Day 1</span>
@@ -192,36 +170,50 @@
         let currentDay = 1;
         const totalDays = 7;
         const dayDisplay = document.getElementById("dayDisplay");
-        const prevButton = document.getElementById("prevButton");
-        const nextButton = document.getElementById("nextButton");
         const streakProgress = document.getElementById("streakProgress");
         const taskCheckboxes = document.querySelectorAll(".task-checkbox");
         const journalBox = document.getElementById("journalBox");
-        const todoBox = document.getElementById("todoBox");
+        const prevButton = document.getElementById("prevButton");
+        const nextButton = document.getElementById("nextButton");
         const saveButton = document.getElementById("saveButton");
 
-        function updateDayDisplay() {
-            dayDisplay.textContent = `Day ${currentDay}`;
-            prevButton.disabled = currentDay === 1;
-            nextButton.disabled = currentDay === totalDays;
-            streakProgress.style.width = `${(currentDay - 1) * (100 / totalDays)}%`;
+        function updateStreak() {
+            const allTasksDone = Array.from(taskCheckboxes).every(checkbox => checkbox.checked);
+            streakProgress.style.width = allTasksDone ? `${(currentDay / totalDays) * 100}%` : `${((currentDay - 1) / totalDays) * 100}%`;
+        }
+
+        function saveProgress() {
+            const tasksState = Array.from(taskCheckboxes).map(cb => cb.checked);
+            const journalEntry = journalBox.value;
+            localStorage.setItem(`tasksDay${currentDay}`, JSON.stringify(tasksState));
+            localStorage.setItem(`journalDay${currentDay}`, journalEntry);
+            localStorage.setItem("currentDay", currentDay);
+            alert("Your progress has been saved!");
+        }
+
+        function loadProgress() {
+            const tasksState = JSON.parse(localStorage.getItem(`tasksDay${currentDay}`)) || [];
+            taskCheckboxes.forEach((cb, index) => cb.checked = tasksState[index] || false);
+            journalBox.value = localStorage.getItem(`journalDay${currentDay}`) || "";
+            updateStreak();
         }
 
         function changeDay(increment) {
             currentDay += increment;
-            taskCheckboxes.forEach(checkbox => checkbox.checked = false);
-            updateDayDisplay();
+            dayDisplay.textContent = `Day ${currentDay}`;
+            prevButton.disabled = currentDay === 1;
+            nextButton.disabled = currentDay === totalDays;
+            loadProgress();
         }
 
-        function saveProgress() {
-            alert("Your progress has been saved!");
-        }
-
+        taskCheckboxes.forEach(checkbox => checkbox.addEventListener("change", updateStreak));
+        saveButton.addEventListener("click", saveProgress);
         prevButton.addEventListener("click", () => changeDay(-1));
         nextButton.addEventListener("click", () => changeDay(1));
-        saveButton.addEventListener("click", saveProgress);
 
-        updateDayDisplay();
+        currentDay = parseInt(localStorage.getItem("currentDay")) || 1;
+        dayDisplay.textContent = `Day ${currentDay}`;
+        loadProgress();
     </script>
 </body>
 </html>
