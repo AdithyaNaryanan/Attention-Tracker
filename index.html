@@ -253,11 +253,11 @@ currentDay = parseInt(localStorage.getItem("currentDay")) || 1;
 dayDisplay.textContent = `Day ${currentDay}`;
 loadProgress();
 
-        prevButton.addEventListener("click", () => changeDay(-1));
+         prevButton.addEventListener("click", () => changeDay(-1));
         nextButton.addEventListener("click", () => changeDay(1));
         saveButton.addEventListener("click", saveProgress);
 
         updateDayDisplay();
-    </script>
+</script>
 </body>
 </html>
