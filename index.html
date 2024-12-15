@@ -209,17 +209,17 @@
             localStorage.setItem("metricsScoreDay7", metricsScoreDay7.value);
             localStorage.setItem("currentDay", currentDay);
             alert("Your progress has been saved!");
-        }
-
+        
         function loadProgress() {
-            const tasksState = JSON.parse(localStorage.getItem(`tasksDay${currentDay}`)) || [];
-            taskCheckboxes.forEach((cb, index) => cb.checked = tasksState[index] || false);
-            journalBox.value = localStorage.getItem(`journalDay${currentDay}`) || "";
-            todoBox.value = localStorage.getItem(`todoDay${currentDay}`) || "";
-            metricsScoreDay1.value = localStorage.getItem("metricsScoreDay1") || 
-            metricsScoreDay7.value = localStorage.getItem("metricsScoreDay7") || "0";
-            updateStreak();
+        const tasksState = JSON.parse(localStorage.getItem(`tasksDay${currentDay}`)) || [];
+        taskCheckboxes.forEach((cb, index) => cb.checked = tasksState[index] || false);
+        journalBox.value = localStorage.getItem(`journalDay${currentDay}`) || "";
+        todoBox.value = localStorage.getItem(`todoDay${currentDay}`) || "";
+        metricsScoreDay1.value = localStorage.getItem("metricsScoreDay1") || "0";
+        metricsScoreDay7.value = localStorage.getItem("metricsScoreDay7") || "0";
+        updateStreak();
         }
+        
 
         function changeDay(increment) {
             currentDay += increment;
