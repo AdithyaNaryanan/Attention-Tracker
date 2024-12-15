@@ -188,50 +188,61 @@
 
     <script>
         let currentDay = 1;
-        const totalDays = 7;
-        const dayDisplay = document.getElementById("dayDisplay");
-        const prevButton = document.getElementById("prevButton");
-        const nextButton = document.getElementById("nextButton");
-        const streakProgress = document.getElementById("streakProgress");
-        const taskCheckboxes = document.querySelectorAll(".task-checkbox");
-        const journalBox = document.getElementById("journalBox");
-        const todoBox = document.getElementById("todoBox");
-        const saveButton = document.getElementById("saveButton");
+const totalDays = 7;
+const dayDisplay = document.getElementById("dayDisplay");
+const streakProgress = document.getElementById("streakProgress");
+const taskCheckboxes = document.querySelectorAll(".task-checkbox");
+const journalBox = document.getElementById("journalBox");
+const todoBox = document.getElementById("todoBox");
+const prevButton = document.getElementById("prevButton");
+const nextButton = document.getElementById("nextButton");
+const saveButton = document.getElementById("saveButton");
 
-        function updateDayDisplay() {
-            dayDisplay.textContent = `Day ${currentDay}`;
-            prevButton.disabled = currentDay === 1;
-            nextButton.disabled = currentDay === totalDays;
-            streakProgress.style.width = `${(currentDay - 1) * (100 / totalDays)}%`;
-        }
+function updateStreak() {
+    const allTasksDone = Array.from(taskCheckboxes).every(checkbox => checkbox.checked);
+    if (allTasksDone) {
+        streakProgress.style.width = `${(currentDay / totalDays) * 100}%`;
+        localStorage.setItem(`streakDay${currentDay}`, true);
+    } else {
+        streakProgress.style.width = `${((currentDay - 1) / totalDays) * 100}%`;
+        localStorage.setItem(`streakDay${currentDay}`, false);
+    }
+}
 
-        function changeDay(increment) {
-            currentDay += increment;
-            taskCheckboxes.forEach(checkbox => checkbox.checked = false);
-            updateDayDisplay();
-        }
+function saveProgress() {
+    localStorage.setItem(`tasksDay${currentDay}`, JSON.stringify(Array.from(taskCheckboxes).map(cb => cb.checked)));
+    localStorage.setItem(`journalDay${currentDay}`, journalBox.value);
+    localStorage.setItem(`todoDay${currentDay}`, todoBox.value);
+    localStorage.setItem("currentDay", currentDay);
+    alert("Your progress has been saved!");
+}
 
-        function saveProgress() {
-        localStorage.setItem(`tasksDay${currentDay}`, JSON.stringify(Array.from(taskCheckboxes).map(cb => cb.checked)));
-        localStorage.setItem(`journalDay${currentDay}`, journalBox.value);
-        localStorage.setItem(`todoDay${currentDay}`, todoBox.value);
-        alert("Your progress has been saved!");
-        }
+function loadProgress() {
+    const tasksState = JSON.parse(localStorage.getItem(`tasksDay${currentDay}`)) || [];
+    taskCheckboxes.forEach((cb, index) => cb.checked = tasksState[index] || false);
+    journalBox.value = localStorage.getItem(`journalDay${currentDay}`) || "";
+    todoBox.value = localStorage.getItem(`todoDay${currentDay}`) || "";
+    updateStreak();
+}
 
-        function loadProgress() {
-        const tasksState = JSON.parse(localStorage.getItem(`tasksDay${currentDay}`)) || [];
-        taskCheckboxes.forEach((checkbox, index) => checkbox.checked = tasksState[index] || false);
-        journalBox.value = localStorage.getItem(`journalDay${currentDay}`) || "";
-        todoBox.value = localStorage.getItem(`todoDay${currentDay}`) || "";
-        }
+function changeDay(increment) {
+    currentDay += increment;
+    dayDisplay.textContent = `Day ${currentDay}`;
+    prevButton.disabled = currentDay === 1;
+    nextButton.disabled = currentDay === totalDays;
+    loadProgress();
+    updateStreak();
+}
 
-        function changeDay(increment) {
-        currentDay += increment;
-        updateDayDisplay();
-        loadProgress();
-        }
+taskCheckboxes.forEach(checkbox => checkbox.addEventListener("change", updateStreak));
+saveButton.addEventListener("click", saveProgress);
+prevButton.addEventListener("click", () => changeDay(-1));
+nextButton.addEventListener("click", () => changeDay(1));
 
-        loadProgress();
+currentDay = parseInt(localStorage.getItem("currentDay")) || 1;
+dayDisplay.textContent = `Day ${currentDay}`;
+loadProgress();
+
 
         prevButton.addEventListener("click", () => changeDay(-1));
         nextButton.addEventListener("click", () => changeDay(1));
