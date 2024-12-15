@@ -134,22 +134,20 @@
     </div>
 
     <div class="container">
-        <div class="score-box">
-            <h3>Metrics Score - Day 1</h3>
-            <input type="number" id="metricsScoreDay1" value="0">
-        </div>
-        <div class="score-box">
-            <h3>Metrics Score - Day 7</h3>
-            <input type="number" id="metricsScoreDay7" value="0" disabled>
-        </div>
+    <p style="text-align: center; margin-bottom: 20px;">
+        Take the <strong>Attention Span Test</strong> to get your score. Input below to track your progress: 
+        <a href="https://www.psychologytoday.com/intl/tests/personality/attention-span-test/results" target="_blank">Attention Span Test Link</a>
+    </p>
+    <div class="score-box">
+        <h3>Metrics Score - Day 1</h3>
+        <input type="number" id="metricsScoreDay1" value="0">
     </div>
-    
-    <div class="container">
-        <div class="score-box">
-            <h3>Effort Score</h3>
-            <p id="effortScore">0</p>
-        </div>
+    <div class="score-box">
+        <h3>Metrics Score - Day 7</h3>
+        <input type="number" id="metricsScoreDay7" value="0" disabled>
     </div>
+    </div>
+
 
     <div class="container">
         <h2>Tasks for the Day</h2>
@@ -214,8 +212,26 @@
         }
 
         function saveProgress() {
-            alert("Your progress has been saved!");
+        localStorage.setItem(`tasksDay${currentDay}`, JSON.stringify(Array.from(taskCheckboxes).map(cb => cb.checked)));
+        localStorage.setItem(`journalDay${currentDay}`, journalBox.value);
+        localStorage.setItem(`todoDay${currentDay}`, todoBox.value);
+        alert("Your progress has been saved!");
         }
+
+        function loadProgress() {
+        const tasksState = JSON.parse(localStorage.getItem(`tasksDay${currentDay}`)) || [];
+        taskCheckboxes.forEach((checkbox, index) => checkbox.checked = tasksState[index] || false);
+        journalBox.value = localStorage.getItem(`journalDay${currentDay}`) || "";
+        todoBox.value = localStorage.getItem(`todoDay${currentDay}`) || "";
+        }
+
+        function changeDay(increment) {
+        currentDay += increment;
+        updateDayDisplay();
+        loadProgress();
+        }
+
+        loadProgress();
 
         prevButton.addEventListener("click", () => changeDay(-1));
         nextButton.addEventListener("click", () => changeDay(1));
