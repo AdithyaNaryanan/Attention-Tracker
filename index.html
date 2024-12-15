@@ -82,7 +82,7 @@
             background: #edf2f7;
         }
 
-        .nav-buttons {
+        .nav-buttons, .save-button {
             text-align: center;
             margin: 20px 0;
         }
@@ -183,5 +183,45 @@
         <span id="dayDisplay">Day 1</span>
         <button id="nextButton">Next &gt;</button>
     </div>
+
+    <div class="save-button">
+        <button id="saveButton">Save Progress</button>
+    </div>
+
+    <script>
+        let currentDay = 1;
+        const totalDays = 7;
+        const dayDisplay = document.getElementById("dayDisplay");
+        const prevButton = document.getElementById("prevButton");
+        const nextButton = document.getElementById("nextButton");
+        const streakProgress = document.getElementById("streakProgress");
+        const taskCheckboxes = document.querySelectorAll(".task-checkbox");
+        const journalBox = document.getElementById("journalBox");
+        const todoBox = document.getElementById("todoBox");
+        const saveButton = document.getElementById("saveButton");
+
+        function updateDayDisplay() {
+            dayDisplay.textContent = `Day ${currentDay}`;
+            prevButton.disabled = currentDay === 1;
+            nextButton.disabled = currentDay === totalDays;
+            streakProgress.style.width = `${(currentDay - 1) * (100 / totalDays)}%`;
+        }
+
+        function changeDay(increment) {
+            currentDay += increment;
+            taskCheckboxes.forEach(checkbox => checkbox.checked = false);
+            updateDayDisplay();
+        }
+
+        function saveProgress() {
+            alert("Your progress has been saved!");
+        }
+
+        prevButton.addEventListener("click", () => changeDay(-1));
+        nextButton.addEventListener("click", () => changeDay(1));
+        saveButton.addEventListener("click", saveProgress);
+
+        updateDayDisplay();
+    </script>
 </body>
 </html>
