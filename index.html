@@ -187,7 +187,7 @@
     </div>
 
     <script>
-        let currentDay = 1;
+       let currentDay = 1;
 const totalDays = 7;
 const dayDisplay = document.getElementById("dayDisplay");
 const streakProgress = document.getElementById("streakProgress");
@@ -200,11 +200,19 @@ const saveButton = document.getElementById("saveButton");
 
 function updateStreak() {
     const allTasksDone = Array.from(taskCheckboxes).every(checkbox => checkbox.checked);
+    let streak = 0;
+
+    for (let i = 1; i <= totalDays; i++) {
+        if (localStorage.getItem(`streakDay${i}`) === 'true') {
+            streak++;
+        }
+    }
+
+    streakProgress.style.width = `${(streak / totalDays) * 100}%`;
+
     if (allTasksDone) {
-        streakProgress.style.width = `${(currentDay / totalDays) * 100}%`;
         localStorage.setItem(`streakDay${currentDay}`, true);
     } else {
-        streakProgress.style.width = `${((currentDay - 1) / totalDays) * 100}%`;
         localStorage.setItem(`streakDay${currentDay}`, false);
     }
 }
@@ -214,6 +222,7 @@ function saveProgress() {
     localStorage.setItem(`journalDay${currentDay}`, journalBox.value);
     localStorage.setItem(`todoDay${currentDay}`, todoBox.value);
     localStorage.setItem("currentDay", currentDay);
+    updateStreak();
     alert("Your progress has been saved!");
 }
 
@@ -227,11 +236,12 @@ function loadProgress() {
 
 function changeDay(increment) {
     currentDay += increment;
+    if (currentDay < 1) currentDay = 1;
+    if (currentDay > totalDays) currentDay = totalDays;
     dayDisplay.textContent = `Day ${currentDay}`;
     prevButton.disabled = currentDay === 1;
     nextButton.disabled = currentDay === totalDays;
     loadProgress();
-    updateStreak();
 }
 
 taskCheckboxes.forEach(checkbox => checkbox.addEventListener("change", updateStreak));
@@ -242,7 +252,6 @@ nextButton.addEventListener("click", () => changeDay(1));
 currentDay = parseInt(localStorage.getItem("currentDay")) || 1;
 dayDisplay.textContent = `Day ${currentDay}`;
 loadProgress();
-
 
         prevButton.addEventListener("click", () => changeDay(-1));
         nextButton.addEventListener("click", () => changeDay(1));
