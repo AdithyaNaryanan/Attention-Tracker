@@ -134,18 +134,14 @@
     </div>
 
     <div class="container">
-    <p>
-        Take this test at the start of the week and input your score below. On day 7 you can take it again and add your score below to see the difference!<br>
-        <strong>Test:</strong> <a href="https://www.psychologytoday.com/intl/tests/personality/attention-span-test/results" target="_blank">Attention Span Test</a>
-    </p>
-    <div class="score-box">
-        <h3>Metrics Score - Day 1</h3>
-        <input type="number" id="metricsScoreDay1" value="0">
-    </div>
-    <div class="score-box">
-        <h3>Metrics Score - Day 7</h3>
-        <input type="number" id="metricsScoreDay7" value="0" disabled>
-    </div>
+        <div class="score-box">
+            <h3>Metrics Score - Day 1</h3>
+            <input type="number" id="metricsScoreDay1" value="0">
+        </div>
+        <div class="score-box">
+            <h3>Metrics Score - Day 7</h3>
+            <input type="number" id="metricsScoreDay7" value="0" disabled>
+        </div>
     </div>
 
     <div class="container">
@@ -194,16 +190,9 @@
         const metricsScoreDay7 = document.getElementById("metricsScoreDay7");
 
         function updateStreak() {
-        const allTasksDone = Array.from(taskCheckboxes).every(checkbox => checkbox.checked);
-        console.log("All tasks done:", allTasksDone);
-        console.log("Current Day:", currentDay);
-
-        const width = allTasksDone ? `${(currentDay / totalDays) * 100}%` : `${((currentDay - 1) / totalDays) * 100}%`;
-        console.log("Streak Width:", width);
-
-        streakProgress.style.width = width;
+            const allTasksDone = Array.from(taskCheckboxes).every(checkbox => checkbox.checked);
+            streakProgress.style.width = allTasksDone ? `${(currentDay / totalDays) * 100}%` : `${((currentDay - 1) / totalDays) * 100}%`;
         }
-
 
         function saveProgress() {
             const tasksState = Array.from(taskCheckboxes).map(cb => cb.checked);
@@ -216,14 +205,17 @@
             localStorage.setItem("metricsScoreDay7", metricsScoreDay7.value);
             localStorage.setItem("currentDay", currentDay);
             alert("Your progress has been saved!");
-        
-        function loadProgress() {
-        const tasksState = JSON.parse(localStorage.getItem(`tasksDay${currentDay}`)) || [];
-        taskCheckboxes.forEach((cb, index) => cb.checked = tasksState[index] || false);
-        updateStreak();
         }
 
-        
+        function loadProgress() {
+            const tasksState = JSON.parse(localStorage.getItem(`tasksDay${currentDay}`)) || [];
+            taskCheckboxes.forEach((cb, index) => cb.checked = tasksState[index] || false);
+            journalBox.value = localStorage.getItem(`journalDay${currentDay}`) || "";
+            todoBox.value = localStorage.getItem(`todoDay${currentDay}`) || "";
+            metricsScoreDay1.value = localStorage.getItem("metricsScoreDay1") || 
+            metricsScoreDay7.value = localStorage.getItem("metricsScoreDay7") || "0";
+            updateStreak();
+        }
 
         function changeDay(increment) {
             currentDay += increment;
