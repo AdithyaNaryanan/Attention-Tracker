@@ -135,11 +135,15 @@
 
     <div class="container">
         <div class="score-box">
-            <h3>Metrics Score</h3>
-            <input type="number" id="metricsScore" value="0">
+            <h3>Metrics Score - Day 1</h3>
+            <input type="number" id="metricsScoreDay1" value="0">
+        </div>
+        <div class="score-box">
+            <h3>Metrics Score - Day 7</h3>
+            <input type="number" id="metricsScoreDay7" value="0" disabled>
         </div>
     </div>
-    
+
     <div class="container">
         <h2>Tasks for the Day</h2>
         <div class="task-list">
@@ -154,6 +158,11 @@
     <div class="container">
         <h2>Journal</h2>
         <textarea class="journal-box" id="journalBox" placeholder="Write your thoughts here..."></textarea>
+    </div>
+
+    <div class="container">
+        <h2>To-Do List</h2>
+        <textarea class="todo-box" id="todoBox" placeholder="Write your tasks for the day..."></textarea>
     </div>
 
     <div class="nav-buttons">
@@ -173,9 +182,12 @@
         const streakProgress = document.getElementById("streakProgress");
         const taskCheckboxes = document.querySelectorAll(".task-checkbox");
         const journalBox = document.getElementById("journalBox");
+        const todoBox = document.getElementById("todoBox");
         const prevButton = document.getElementById("prevButton");
         const nextButton = document.getElementById("nextButton");
         const saveButton = document.getElementById("saveButton");
+        const metricsScoreDay1 = document.getElementById("metricsScoreDay1");
+        const metricsScoreDay7 = document.getElementById("metricsScoreDay7");
 
         function updateStreak() {
             const allTasksDone = Array.from(taskCheckboxes).every(checkbox => checkbox.checked);
@@ -185,8 +197,12 @@
         function saveProgress() {
             const tasksState = Array.from(taskCheckboxes).map(cb => cb.checked);
             const journalEntry = journalBox.value;
+            const todoEntry = todoBox.value;
             localStorage.setItem(`tasksDay${currentDay}`, JSON.stringify(tasksState));
             localStorage.setItem(`journalDay${currentDay}`, journalEntry);
+            localStorage.setItem(`todoDay${currentDay}`, todoEntry);
+            localStorage.setItem("metricsScoreDay1", metricsScoreDay1.value);
+            localStorage.setItem("metricsScoreDay7", metricsScoreDay7.value);
             localStorage.setItem("currentDay", currentDay);
             alert("Your progress has been saved!");
         }
@@ -195,6 +211,9 @@
             const tasksState = JSON.parse(localStorage.getItem(`tasksDay${currentDay}`)) || [];
             taskCheckboxes.forEach((cb, index) => cb.checked = tasksState[index] || false);
             journalBox.value = localStorage.getItem(`journalDay${currentDay}`) || "";
+            todoBox.value = localStorage.getItem(`todoDay${currentDay}`) || "";
+            metricsScoreDay1.value = localStorage.getItem("metricsScoreDay1") || 
+            metricsScoreDay7.value = localStorage.getItem("metricsScoreDay7") || "0";
             updateStreak();
         }
 
